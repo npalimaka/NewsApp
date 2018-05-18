@@ -17,5 +17,4 @@ public class NewsItem {
     private String mDate;
     private String mUrl;
 
-
 }
