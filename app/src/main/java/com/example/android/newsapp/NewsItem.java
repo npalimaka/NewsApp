@@ -12,9 +12,10 @@ import lombok.Setter;
 @Setter
 public class NewsItem {
 
-    private String mTitle;
-    private String mSection;
-    private String mDate;
-    private String mUrl;
+    private String title;
+    private String section;
+    private String date;
+    private String url;
+    private String author;
 
 }

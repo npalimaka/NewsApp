@@ -23,14 +23,7 @@ import butterknife.ButterKnife;
  */
 public class NewsAdapter extends ArrayAdapter<NewsItem> {
 
-    @BindView(R.id.news_title)
-    TextView newsTitle;
-    @BindView(R.id.news_section)
-    TextView newsSection;
-    @BindView(R.id.date)
-    TextView newsDate;
-    @BindView(R.id.time)
-    TextView newsTime;
+    private ViewHolder viewHolder;
 
     public NewsAdapter(@NonNull Context context, @NonNull List<NewsItem> objects) {
         super(context, 0, objects);
@@ -44,19 +37,23 @@ public class NewsAdapter extends ArrayAdapter<NewsItem> {
         if (listItemView == null) {
             listItemView = LayoutInflater.from(getContext()).inflate(
                     R.layout.single_list_item, parent, false);
-            ButterKnife.bind(this, listItemView);
+            viewHolder = new ViewHolder(listItemView);
+            listItemView.setTag(viewHolder);
+        }else{
+            viewHolder = (ViewHolder) listItemView.getTag();
         }
 
         NewsItem singleNews = getItem(position);
 
-        DateTime date = DateTime.parse(singleNews.getMDate());
+        DateTime date = DateTime.parse(singleNews.getDate());
         Date dateToDate = date.toDate();
         String formattedDate = formatDate(dateToDate);
         String formattedTime = formatTime(dateToDate);
-        newsDate.setText(formattedDate);
-        newsTime.setText(formattedTime);
-        newsTitle.setText(singleNews.getMTitle());
-        newsSection.setText(singleNews.getMSection());
+        viewHolder.newsDate.setText(formattedDate);
+        viewHolder.newsTime.setText(formattedTime);
+        viewHolder.newsTitle.setText(singleNews.getTitle());
+        viewHolder.newsSection.setText(singleNews.getSection());
+        viewHolder.newsAuthor.setText(singleNews.getAuthor());
         return listItemView;
     }
 
@@ -68,5 +65,22 @@ public class NewsAdapter extends ArrayAdapter<NewsItem> {
     private String formatTime(Date dateObject) {
         SimpleDateFormat timeFormat = new SimpleDateFormat("h:mm a");
         return timeFormat.format(dateObject);
+    }
+
+    static class ViewHolder{
+        @BindView(R.id.news_title)
+        TextView newsTitle;
+        @BindView(R.id.news_section)
+        TextView newsSection;
+        @BindView(R.id.date)
+        TextView newsDate;
+        @BindView(R.id.time)
+        TextView newsTime;
+        @BindView(R.id.news_author)
+        TextView newsAuthor;
+
+        public ViewHolder(View view) {
+            ButterKnife.bind(this, view);
+        }
     }
 }

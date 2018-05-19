@@ -31,7 +31,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     ProgressBar progressBar;
 
     private static final String GUARDIAN_REQUEST_URL =
-            "https://content.guardianapis.com/search?q=poland&limit=10&api-key=b523045f-f15b-4adf-9976-a0d26e4c5d49";
+            "https://content.guardianapis.com/search?q=poland&show-tags=contributors&limit=10&api-key=b523045f-f15b-4adf-9976-a0d26e4c5d49";
     private NewsAdapter newsAdapter;
     private final int NEWS_LOADER_ID = 1;
 
@@ -46,7 +46,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         newsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String url = newsAdapter.getItem(position).getMUrl();
+                String url = newsAdapter.getItem(position).getUrl();
                 Intent intent = new Intent(Intent.ACTION_VIEW);
                 intent.setData(Uri.parse(url));
                 startActivity(intent);

@@ -19,11 +19,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- *  This class represents tools for handling a http request and response
+ * This class represents tools for handling a http request and response
  */
 public class QueryUtils {
 
-    private QueryUtils(){}
+    private QueryUtils() {
+    }
+
     private static final String LOG_TAG = QueryUtils.class.getName();
 
     private static URL createUrl(String stringUrl) {
@@ -35,6 +37,7 @@ public class QueryUtils {
         }
         return url;
     }
+
     private static String makeHttpRequest(URL url) throws IOException {
         String jsonResponse = "";
         if (url == null) {
@@ -45,12 +48,12 @@ public class QueryUtils {
         InputStream inputStream = null;
         try {
             urlConnection = (HttpURLConnection) url.openConnection();
-            urlConnection.setReadTimeout(10000 );
+            urlConnection.setReadTimeout(10000);
             urlConnection.setConnectTimeout(15000);
             urlConnection.setRequestMethod("GET");
             urlConnection.connect();
 
-            if (urlConnection.getResponseCode() == 200) {
+            if (urlConnection.getResponseCode() == HttpURLConnection.HTTP_OK) {
                 inputStream = urlConnection.getInputStream();
                 jsonResponse = readFromStream(inputStream);
             } else {
@@ -82,6 +85,7 @@ public class QueryUtils {
         }
         return output.toString();
     }
+
     public static List<NewsItem> fetchNewsData(String requestUrl) {
         URL url = createUrl(requestUrl);
         String jsonResponse = null;
@@ -92,9 +96,7 @@ public class QueryUtils {
             Log.e(LOG_TAG, "Error closing input stream", e);
         }
 
-        List<NewsItem> news = extractNews(jsonResponse);
-
-        return news;
+        return extractNews(jsonResponse);
     }
 
     private static ArrayList<NewsItem> extractNews(String newsJSON) {
@@ -107,14 +109,25 @@ public class QueryUtils {
             JSONObject jsonObject = new JSONObject(newsJSON);
             JSONObject nestedJsonObject = jsonObject.getJSONObject("response");
             JSONArray jsonArray = nestedJsonObject.getJSONArray("results");
-            for(int i = 0; i< jsonArray.length(); i++){
+            for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject singleNews = jsonArray.getJSONObject(i);
                 String sectionName = singleNews.getString("sectionName");
                 String title = singleNews.getString("webTitle");
                 String url = singleNews.getString("webUrl");
                 String publicationDate = singleNews.getString("webPublicationDate");
 
-                NewsItem newsItem = new NewsItem(title, sectionName, publicationDate, url);
+                //Checking if the contributor is available
+                String author = "N/A";
+
+                JSONArray tags = singleNews.getJSONArray("tags");
+                if (tags.length() > 0) {
+                    JSONObject tagObject = tags.getJSONObject(0);
+                    author = tagObject.getString("firstName") + " " +
+                            tagObject.getString("lastName");
+                } else {
+                    author = "N/A";
+                }
+                NewsItem newsItem = new NewsItem(title, sectionName, publicationDate, url, author);
                 news.add(newsItem);
             }
 
